@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
-
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func game() {
-	void ClearBackground(Color color); 
+	rl.ClearBackground(rl.Black)
 
 }
