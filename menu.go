@@ -122,21 +122,3 @@ func menu() {
 	}
 
 }
-
-
-func selec_menu(){
-
-	const X float32 = 0
-	const Y float32 = 0
-	const Z float32 = 0
-
-	
-
-	
-
-	rl.BeginDrawing()
-	rl.DrawBoundingBox(rl.BoundingBox{},rl.Black)
-	rl.EndDrawing()
-
-
-}
