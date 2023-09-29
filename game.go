@@ -8,24 +8,29 @@ import (
 )
 
 const (
-	largeurEcran  = 600
-	hauteurEcran  = 600
-	tailleGrille  = 9
+	largeurEcran   = 1000
+	hauteurEcran   = 600
+	tailleGrille   = 9
+	tailleCellule  = 66
+	boutonLargeur  = 120
+	boutonHauteur  = 40
+	boutonX        = largeurEcran - boutonLargeur - 20
+	boutonY        = 10
+	resultatX      = 10
+	resultatY      = 70
+	resultatTaille = 24
 )
 
 var (
-	grille           [tailleGrille][tailleGrille]int
-	tailleCellule    float32
-	rangeeSel        = -1
-	colonneSel       = -1
+	grille          [tailleGrille][tailleGrille]int
+	rangeeSel       = -1
+	colonneSel      = -1
 	verificationEnCours = false
 )
 
 func main() {
 	rl.InitWindow(largeurEcran, hauteurEcran, "Exemple de Sudoku")
 	rl.SetTargetFPS(60)
-
-	tailleCellule = float32(largeurEcran) / float32(tailleGrille)
 
 	// Initialiser le générateur de nombres aléatoires avec une graine basée sur le temps
 	rand.Seed(time.Now().UnixNano())
@@ -37,11 +42,11 @@ func main() {
 		gererSaisie()
 
 		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-			sourisX := float32(rl.GetMouseX())
-			sourisY := float32(rl.GetMouseY())
+			sourisX := rl.GetMouseX()
+			sourisY := rl.GetMouseY()
 
 			// Vérifier si le bouton de vérification a été cliqué
-			if sourisX >= 400 && sourisX <= 500 && sourisY >= 10 && sourisY <= 50 {
+			if sourisX >= boutonX && sourisX <= boutonX+boutonLargeur && sourisY >= boutonY && sourisY <= boutonY+boutonHauteur {
 				verificationEnCours = true
 				resultat := verifierGrille()
 				fmt.Println("La grille est correcte:", resultat)
@@ -51,13 +56,14 @@ func main() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 
+		// Dessiner la grille du sudoku
 		dessinerGrille()
 		dessinerNombres()
 
 		// Dessiner le bouton de vérification
-		rl.DrawRectangle(400, 10, 100, 40, rl.RayWhite)
-		rl.DrawRectangleLines(400, 10, 100, 40, rl.Black)
-		rl.DrawText("Vérifier", 415, 20, 20, rl.Black)
+		rl.DrawRectangle(int32(boutonX), int32(boutonY), int32(boutonLargeur), int32(boutonHauteur), rl.RayWhite)
+		rl.DrawRectangleLines(int32(boutonX), int32(boutonY), int32(boutonLargeur), int32(boutonHauteur), rl.Black)
+		rl.DrawText("Vérifier", int32(boutonX+10), int32(boutonY+10), 20, rl.Black)
 
 		// Afficher un message de résultat de vérification
 		if verificationEnCours {
@@ -65,7 +71,7 @@ func main() {
 			if !verifierGrille() {
 				message = "La grille est incorrecte."
 			}
-			rl.DrawText(message, 10, 70, 24, rl.Black)
+			rl.DrawText(message, int32(resultatX), int32(resultatY), int32(resultatTaille), rl.Black)
 		}
 
 		rl.EndDrawing()
@@ -74,32 +80,30 @@ func main() {
 	rl.CloseWindow()
 }
 
-// ... (les fonctions restent les mêmes)
-
 func verifierGrille() bool {
-	for row := 0; row < tailleGrille; row++ {
-		for col := 0; col < tailleGrille; col++ {
-			num := grille[row][col]
-			if num != 0 {
+	for rangee := 0; rangee < tailleGrille; rangee++ {
+		for colonne := 0; colonne < tailleGrille; colonne++ {
+			chiffre := grille[rangee][colonne]
+			if chiffre != 0 {
 				// Vérification de la ligne
 				for i := 0; i < tailleGrille; i++ {
-					if i != col && grille[row][i] == num {
+					if i != colonne && grille[rangee][i] == chiffre {
 						return false
 					}
 				}
 
 				// Vérification de la colonne
 				for i := 0; i < tailleGrille; i++ {
-					if i != row && grille[i][col] == num {
+					if i != rangee && grille[i][colonne] == chiffre {
 						return false
 					}
 				}
 
 				// Vérification de la région 3x3
-				startRow, startCol := row-row%3, col-col%3
-				for i := startRow; i < startRow+3; i++ {
-					for j := startCol; j < startCol+3; j++ {
-						if i != row && j != col && grille[i][j] == num {
+				rangeeDebut, colonneDebut := rangee-rangee%3, colonne-colonne%3
+				for i := rangeeDebut; i < rangeeDebut+3; i++ {
+					for j := colonneDebut; j < colonneDebut+3; j++ {
+						if i != rangee && j != colonne && grille[i][j] == chiffre {
 							return false
 						}
 					}
@@ -252,7 +256,17 @@ func dessinerGrille() {
 			rl.DrawLine(0, int32(float32(i)*tailleCellule), largeurEcran, int32(float32(i)*tailleCellule), rl.Black)
 		}
 	}
+
+	// Dessiner des lignes épaisses autour des régions
+	for i := 0; i <= 3; i++ {
+		rl.DrawLine(0, int32(i*3*tailleCellule)+2, largeurEcran, int32(i*3*tailleCellule), rl.Black)
+		rl.DrawLine(0, int32(i*3*tailleCellule)-2, largeurEcran, int32(i*3*tailleCellule), rl.Black)
+
+		rl.DrawLine(int32(i*3*tailleCellule)+2, 0, int32(i*3*tailleCellule), hauteurEcran, rl.Black)
+		rl.DrawLine(int32(i*3*tailleCellule)-2, 0, int32(i*3*tailleCellule), hauteurEcran, rl.Black)
+	}
 }
+
 
 func dessinerNombres() {
 	for rangee := 0; rangee < tailleGrille; rangee++ {
