@@ -259,11 +259,12 @@ func dessinerGrille() {
 
 	// Dessiner des lignes épaisses autour des régions
 	for i := 0; i <= 3; i++ {
-		rl.DrawLine(0, int32(i*3*tailleCellule)+2, largeurEcran, int32(i*3*tailleCellule), rl.Black)
-		rl.DrawLine(0, int32(i*3*tailleCellule)-2, largeurEcran, int32(i*3*tailleCellule), rl.Black)
+		rl.DrawLine(0, int32(i*3*tailleCellule)+1, largeurEcran, int32(i*3*tailleCellule), rl.Black)
+		rl.DrawLine(0, int32(i*3*tailleCellule)-1, largeurEcran, int32(i*3*tailleCellule), rl.Black)
 
-		rl.DrawLine(int32(i*3*tailleCellule)+2, 0, int32(i*3*tailleCellule), hauteurEcran, rl.Black)
-		rl.DrawLine(int32(i*3*tailleCellule)-2, 0, int32(i*3*tailleCellule), hauteurEcran, rl.Black)
+
+		rl.DrawLine(int32(i*3*tailleCellule)+1, 0, int32(i*3*tailleCellule), hauteurEcran, rl.Black)
+		rl.DrawLine(int32(i*3*tailleCellule)-1, 0, int32(i*3*tailleCellule), hauteurEcran, rl.Black)
 	}
 }
 
