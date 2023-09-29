@@ -8,37 +8,65 @@ import (
 )
 
 const (
-	screenWidth  = 600
-	screenHeight = 600
-	gridSize     = 9
+	largeurEcran  = 600
+	hauteurEcran  = 600
+	tailleGrille  = 9
 )
 
 var (
-	grid        [gridSize][gridSize]int
-	cellSize    float32
-	selectedRow = -1
-	selectedCol = -1
+	grille           [tailleGrille][tailleGrille]int
+	tailleCellule    float32
+	rangeeSel        = -1
+	colonneSel       = -1
+	verificationEnCours = false
 )
 
 func main() {
-	rl.InitWindow(screenWidth, screenHeight, "Sudoku Example")
+	rl.InitWindow(largeurEcran, hauteurEcran, "Exemple de Sudoku")
 	rl.SetTargetFPS(60)
 
-	cellSize = float32(screenWidth) / float32(gridSize)
+	tailleCellule = float32(largeurEcran) / float32(tailleGrille)
 
 	// Initialiser le générateur de nombres aléatoires avec une graine basée sur le temps
 	rand.Seed(time.Now().UnixNano())
 
 	// Générer une grille Sudoku valide avec quelques cases vides
-	generateSudoku()
+	genererSudoku()
 
 	for !rl.WindowShouldClose() {
-		handleInput()
+		gererSaisie()
+
+		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+			sourisX := float32(rl.GetMouseX())
+			sourisY := float32(rl.GetMouseY())
+
+			// Vérifier si le bouton de vérification a été cliqué
+			if sourisX >= 400 && sourisX <= 500 && sourisY >= 10 && sourisY <= 50 {
+				verificationEnCours = true
+				resultat := verifierGrille()
+				fmt.Println("La grille est correcte:", resultat)
+			}
+		}
+
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 
-		drawGrid()
-		drawNumbers()
+		dessinerGrille()
+		dessinerNombres()
+
+		// Dessiner le bouton de vérification
+		rl.DrawRectangle(400, 10, 100, 40, rl.RayWhite)
+		rl.DrawRectangleLines(400, 10, 100, 40, rl.Black)
+		rl.DrawText("Vérifier", 415, 20, 20, rl.Black)
+
+		// Afficher un message de résultat de vérification
+		if verificationEnCours {
+			message := "La grille est correcte!"
+			if !verifierGrille() {
+				message = "La grille est incorrecte."
+			}
+			rl.DrawText(message, 10, 70, 24, rl.Black)
+		}
 
 		rl.EndDrawing()
 	}
@@ -46,87 +74,123 @@ func main() {
 	rl.CloseWindow()
 }
 
-func generateSudoku() {
+// ... (les fonctions restent les mêmes)
+
+func verifierGrille() bool {
+	for row := 0; row < tailleGrille; row++ {
+		for col := 0; col < tailleGrille; col++ {
+			num := grille[row][col]
+			if num != 0 {
+				// Vérification de la ligne
+				for i := 0; i < tailleGrille; i++ {
+					if i != col && grille[row][i] == num {
+						return false
+					}
+				}
+
+				// Vérification de la colonne
+				for i := 0; i < tailleGrille; i++ {
+					if i != row && grille[i][col] == num {
+						return false
+					}
+				}
+
+				// Vérification de la région 3x3
+				startRow, startCol := row-row%3, col-col%3
+				for i := startRow; i < startRow+3; i++ {
+					for j := startCol; j < startCol+3; j++ {
+						if i != row && j != col && grille[i][j] == num {
+							return false
+						}
+					}
+				}
+			}
+		}
+	}
+	return true
+}
+
+func genererSudoku() {
 	// Effacer la grille
-	for row := 0; row < gridSize; row++ {
-		for col := 0; col < gridSize; col++ {
-			grid[row][col] = 0
+	for rangee := 0; rangee < tailleGrille; rangee++ {
+		for colonne := 0; colonne < tailleGrille; colonne++ {
+			grille[rangee][colonne] = 0
 		}
 	}
 
 	// Remplir la grille en respectant les règles du Sudoku
-	solveSudoku()
+	resoudreSudoku()
 
 	// Limiter le nombre de chiffres générés aléatoirement
-	remaining := 81 - countInitialNumbers()
-	for remaining > 0 {
-		row := rand.Intn(gridSize)
-		col := rand.Intn(gridSize)
+	restantes := 81 - compterNombresInitiaux()
+	for restantes > 0 {
+		rangee := rand.Intn(tailleGrille)
+		colonne := rand.Intn(tailleGrille)
 
-		if grid[row][col] == 0 {
-			num := rand.Intn(9) + 1
-			if isSafe(row, col, num) {
-				grid[row][col] = num
-				remaining--
+		if grille[rangee][colonne] == 0 {
+			chiffre := rand.Intn(9) + 1
+			if estSecuritaire(rangee, colonne, chiffre) {
+				grille[rangee][colonne] = chiffre
+				restantes--
 			}
 		}
 	}
 
 	// Supprimer certaines valeurs pour créer des cases vides
-	emptyCells := 45 // Nombre de cases vides (ajustez-le selon vos préférences)
-	for emptyCells > 0 {
-		row := rand.Intn(gridSize)
-		col := rand.Intn(gridSize)
+	casesVides := 45 // Nombre de cases vides (ajustez-le selon vos préférences)
+	for casesVides > 0 {
+		rangee := rand.Intn(tailleGrille)
+		colonne := rand.Intn(tailleGrille)
 
-		if grid[row][col] != 0 {
-			grid[row][col] = 0
-			emptyCells--
+		if grille[rangee][colonne] != 0 {
+			grille[rangee][colonne] = 0
+			casesVides--
 		}
 	}
 }
 
-func solveSudoku() bool {
-	emptyRow, emptyCol := findEmptyCell() // Ignorer la deuxième valeur
+func resoudreSudoku() bool {
+	rangeeVide, colonneVide := trouverCaseVide() // Ignorer la deuxième valeur
 
-	if emptyRow == -1 && emptyCol == -1 {
+	if rangeeVide == -1 && colonneVide == -1 {
 		return true // La grille est résolue
 	}
 
-	for num := 1; num <= 9; num++ {
-		if isSafe(emptyRow, emptyCol, num) {
-			grid[emptyRow][emptyCol] = num
+	for chiffre := 1; chiffre <= 9; chiffre++ {
+		if estSecuritaire(rangeeVide, colonneVide, chiffre) {
+			grille[rangeeVide][colonneVide] = chiffre
 
-			if solveSudoku() {
+			if resoudreSudoku() {
 				return true
 			}
 
-			grid[emptyRow][emptyCol] = 0 // Annuler la tentative
+			grille[rangeeVide][colonneVide] = 0 // Annuler la tentative
 		}
 	}
 
 	return false // Aucune solution trouvée pour cette configuration
 }
 
-func isSafe(row, col, num int) bool {
+func estSecuritaire(rangee, colonne, chiffre int) bool {
 	// Vérifier la ligne
-	for i := 0; i < gridSize; i++ {
-		if grid[row][i] == num {
+	for i := 0; i < tailleGrille; i++ {
+		if grille[rangee][i] == chiffre {
 			return false
 		}
 	}
 
 	// Vérifier la colonne
-	for i := 0; i < gridSize; i++ {
-		if grid[i][col] == num {
+	for i := 0; i < tailleGrille; i++ {
+		if grille[i][colonne] == chiffre {
 			return false
 		}
 	}
 
 	// Vérifier la région 3x3
-	startRow, startCol := row-row%3, col-col%3
-	for i := startRow; i < startRow+3; i++ {
-		for j := startCol; j < startCol+3; j++ {
-			if grid[i][j] == num {
+	rangeeDebut, colonneDebut := rangee-rangee%3, colonne-colonne%3
+	for i := rangeeDebut; i < rangeeDebut+3; i++ {
+		for j := colonneDebut; j < colonneDebut+3; j++ {
+			if grille[i][j] == chiffre {
 				return false
 			}
 		}
@@ -135,90 +199,75 @@ func isSafe(row, col, num int) bool {
 	return true
 }
 
-func findEmptyCell() (int, int) {
-	for row := 0; row < gridSize; row++ {
-		for col := 0; col < gridSize; col++ {
-			if grid[row][col] == 0 {
-				return row, col
+func trouverCaseVide() (int, int) {
+	for rangee := 0; rangee < tailleGrille; rangee++ {
+		for colonne := 0; colonne < tailleGrille; colonne++ {
+			if grille[rangee][colonne] == 0 {
+				return rangee, colonne
 			}
 		}
 	}
-	return -1, -1 // Aucune cellule vide trouvée
+	return -1, -1 // Aucune case vide trouvée
 }
 
-func countInitialNumbers() int {
-	count := 0
-	for row := 0; row < gridSize; row++ {
-		for col := 0; col < gridSize; col++ {
-			if grid[row][col] != 0 {
-				count++
+func compterNombresInitiaux() int {
+	compte := 0
+	for rangee := 0; rangee < tailleGrille; rangee++ {
+		for colonne := 0; colonne < tailleGrille; colonne++ {
+			if grille[rangee][colonne] != 0 {
+				compte++
 			}
 		}
 	}
-	return count
+	return compte
 }
 
-func handleInput() {
+func gererSaisie() {
 	if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-		mouseX := float32(rl.GetMouseX())
-		mouseY := float32(rl.GetMouseY())
+		sourisX := float32(rl.GetMouseX())
+		sourisY := float32(rl.GetMouseY())
 
-		selectedRow = int(mouseY / cellSize)
-		selectedCol = int(mouseX / cellSize)
+		rangeeSel = int(sourisY / tailleCellule)
+		colonneSel = int(sourisX / tailleCellule)
 	}
 
-	if rl.IsKeyPressed(rl.KeySpace) && selectedRow != -1 && selectedCol != -1 {
-		// Ne rien faire si l'utilisateur tente de modifier un chiffre généré automatiquement
-		if grid[selectedRow][selectedCol] == 0 {
-			grid[selectedRow][selectedCol] = -1 // Marquer la cellule comme modifiée par l'utilisateur
-		}
-	}
-
-	for key := rl.KeyOne; key <= rl.KeyNine; key++ {
-		if rl.IsKeyPressed(int32(key)) && selectedRow != -1 && selectedCol != -1 {
-			// Ajouter le chiffre sélectionné à la grille si la cellule est modifiable
-			if grid[selectedRow][selectedCol] == -1 {
-				grid[selectedRow][selectedCol] = int(key - rl.KeyOne + 1)
+	for touche := rl.KeyOne; touche <= rl.KeyNine; touche++ {
+		if rl.IsKeyPressed(int32(touche)) && rangeeSel != -1 && colonneSel != -1 {
+			if grille[rangeeSel][colonneSel] == 0 {
+				grille[rangeeSel][colonneSel] = int(touche - rl.KeyOne + 1)
 			}
-		}
-	}
-
-	if rl.IsKeyPressed(rl.KeyBackspace) && selectedRow != -1 && selectedCol != -1 {
-		// Effacer la cellule sélectionnée si elle est modifiable
-		if grid[selectedRow][selectedCol] == -1 {
-			grid[selectedRow][selectedCol] = 0
 		}
 	}
 }
 
-func drawGrid() {
-	for i := 0; i < gridSize; i++ {
+func dessinerGrille() {
+	for i := 0; i < tailleGrille; i++ {
 		// Dessiner les lignes horizontales et verticales
-		rl.DrawLine(int32(float32(i)*cellSize), 0, int32(float32(i)*cellSize), screenHeight, rl.Black)
-		rl.DrawLine(0, int32(float32(i)*cellSize), screenWidth, int32(float32(i)*cellSize), rl.Black)
+		rl.DrawLine(int32(float32(i)*tailleCellule), 0, int32(float32(i)*tailleCellule), hauteurEcran, rl.Black)
+		rl.DrawLine(0, int32(float32(i)*tailleCellule), largeurEcran, int32(float32(i)*tailleCellule), rl.Black)
 
 		// Dessiner des lignes épaisses pour délimiter les régions 3x3
 		if i%3 == 0 && i != 0 {
-			rl.DrawLine(int32(float32(i)*cellSize), 0, int32(float32(i)*cellSize), screenHeight, rl.Black)
-			rl.DrawLine(0, int32(float32(i)*cellSize), screenWidth, int32(float32(i)*cellSize), rl.Black)
+			rl.DrawLine(int32(float32(i)*tailleCellule), 0, int32(float32(i)*tailleCellule), hauteurEcran, rl.Black)
+			rl.DrawLine(0, int32(float32(i)*tailleCellule), largeurEcran, int32(float32(i)*tailleCellule), rl.Black)
 		}
 	}
 }
 
-func drawNumbers() {
-	for row := 0; row < gridSize; row++ {
-		for col := 0; col < gridSize; col++ {
-			number := grid[row][col]
-			if number != 0 && number != -1 {
-				// Dessiner le numéro au centre de la case
-				x := int32(float32(col)*cellSize + cellSize/2 - 10)
-				y := int32(float32(row)*cellSize + cellSize/2 - 10)
-				rl.DrawText(fmt.Sprintf("%d", number), x, y, 20, rl.Black)
+func dessinerNombres() {
+	for rangee := 0; rangee < tailleGrille; rangee++ {
+		for colonne := 0; colonne < tailleGrille; colonne++ {
+			chiffre := grille[rangee][colonne]
+			if chiffre != 0 {
+				// Dessiner le chiffre au centre de la cellule
+				x := int32(float32(colonne)*tailleCellule + tailleCellule/2 - 10)
+				y := int32(float32(rangee)*tailleCellule + tailleCellule/2 - 10)
+				rl.DrawText(fmt.Sprintf("%d", chiffre), x, y, 20, rl.Black)
 			}
 
-			// Dessiner la case sélectionnée en surbrillance
-			if row == selectedRow && col == selectedCol {
-				rl.DrawRectangleLines(int32(float32(col)*cellSize), int32(float32(row)*cellSize), int32(cellSize), int32(cellSize), rl.Red)
+			// Dessiner la cellule sélectionnée en surbrillance
+			if rangee == rangeeSel && colonne == colonneSel {
+				rl.DrawRectangleLines(int32(float32(colonne)*tailleCellule), int32(float32(rangee)*tailleCellule), int32(tailleCellule), int32(tailleCellule), rl.Red)
 			}
 		}
 	}
