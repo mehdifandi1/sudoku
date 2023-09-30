@@ -68,12 +68,12 @@ func main() {
 		// Draw the "Check" button
 		rl.DrawRectangle(int32(ButtonX), int32(ButtonY), int32(ButtonWidth), int32(ButtonHeight), rl.RayWhite)
 		rl.DrawRectangleLines(int32(ButtonX), int32(ButtonY), int32(ButtonWidth), int32(ButtonHeight), rl.Black)
-		rl.DrawText("Check", int32(ButtonX+10), int32(ButtonY+10), 20, rl.Black)
+		rl.DrawText("Vérifier", int32(ButtonX+10), int32(ButtonY+10), 20, rl.Black)
 
 		// Draw the "Generate" button
 		rl.DrawRectangle(int32(ButtonX), int32(ButtonY+50), int32(ButtonWidth), int32(ButtonHeight), rl.RayWhite)
 		rl.DrawRectangleLines(int32(ButtonX), int32(ButtonY+50), int32(ButtonWidth), int32(ButtonHeight), rl.Black)
-		rl.DrawText("Generate", int32(ButtonX+10), int32(ButtonY+60), 20, rl.Black)
+		rl.DrawText("Généré", int32(ButtonX+10), int32(ButtonY+60), 20, rl.Black)
 
 		// Display a verification result message
 		if verificationInProgess {
