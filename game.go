@@ -28,7 +28,7 @@ var (
 	verificationInProgess = false
 )
 
-func main() {
+func Starting_game() {
 	rl.InitWindow(ScreenWidth, ScreenHeight, "Sudoku Example")
 	rl.SetTargetFPS(60)
 
