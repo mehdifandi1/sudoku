@@ -29,8 +29,8 @@ var (
 )
 
 func Starting_game() {
-	rl.InitWindow(ScreenWidth, ScreenHeight, "Sudoku Example")
-	rl.SetTargetFPS(60)
+	
+	
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -68,18 +68,18 @@ func Starting_game() {
 		// Draw the "Check" button
 		rl.DrawRectangle(int32(ButtonX), int32(ButtonY), int32(ButtonWidth), int32(ButtonHeight), rl.RayWhite)
 		rl.DrawRectangleLines(int32(ButtonX), int32(ButtonY), int32(ButtonWidth), int32(ButtonHeight), rl.Black)
-		rl.DrawText("Vérifier", int32(ButtonX+10), int32(ButtonY+10), 20, rl.Black)
+		rl.DrawText("Check", int32(ButtonX+10), int32(ButtonY+10), 20, rl.Black)
 
 		// Draw the "Generate" button
 		rl.DrawRectangle(int32(ButtonX), int32(ButtonY+50), int32(ButtonWidth), int32(ButtonHeight), rl.RayWhite)
 		rl.DrawRectangleLines(int32(ButtonX), int32(ButtonY+50), int32(ButtonWidth), int32(ButtonHeight), rl.Black)
-		rl.DrawText("Généré", int32(ButtonX+10), int32(ButtonY+60), 20, rl.Black)
+		rl.DrawText("Generate", int32(ButtonX+10), int32(ButtonY+60), 20, rl.Black)
 
 		// Display a verification result message
 		if verificationInProgess {
 			message := "The grid is correct!"
 			if !checkGrid() {
-				message = "The grid is incorrect."
+				message = "The grid is incorrect!"
 			}
 			rl.DrawText(message, int32(ResultX), int32(ResultY), int32(ResultTextSize), rl.Black)
 		}
@@ -234,7 +234,7 @@ func drawGrid() {
 	for i := 0; i <= BoardSize; i++ {
 		lineThickness := float32(1)
 		if i%3 == 0 {
-			lineThickness = float32(3) // Lignes plus épaisses pour délimiter les régions
+			lineThickness = float32(3) // Thicker lines to delineate regions
 		}
 
 		// Draw horizontal and vertical lines of the grid
