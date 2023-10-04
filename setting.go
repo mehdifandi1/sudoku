@@ -17,7 +17,7 @@ func setting_window() {
 	rl.PlaySound(params.son)
 
 	// Définir le rectangle du bouton "À Propos"
-	params.àProposBtn = rl.NewRectangle(float32(params.largeurÉcran/2-largeurBtnÀPropos/2), float32(params.hauteurÉcran/2+hauteurBarreVol+50), float32(largeurBtnÀPropos), float32(hauteurBtnÀPropos))
+	MenuBtn.àProposBtn = rl.NewRectangle(float32(params.largeurÉcran/2-largeurBtnÀPropos/2), float32(params.hauteurÉcran/2+hauteurBarreVol+50), float32(largeurBtnÀPropos), float32(hauteurBtnÀPropos))
 
 	// Définir le texte "À Propos"
 	params.texteÀPropos = "                                               C'est le Jeu de Sudoku.\n\nRègles :\nRemplissez la grille de manière à ce que chaque rangée, chaque colonne et chaque boîte de 3x3 contienne les chiffres de 1 à 9.\n\nAmusez-vous bien !"
@@ -37,7 +37,7 @@ func setting_window() {
 		params.positionBarreVol = int32(float32(params.volume) * (float32(largeurBarreVol) / 5))
 
 		// Vérifier si la souris a cliqué sur le bouton "À Propos"
-		if rl.CheckCollisionPointRec(rl.GetMousePosition(), params.àProposBtn) && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+		if rl.CheckCollisionPointRec(rl.GetMousePosition(), MenuBtn.àProposBtn) && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 			params.afficherÀPropos = true // Afficher la fenêtre "À Propos" lorsque le bouton est cliqué
 		}
 
@@ -82,8 +82,8 @@ func setting_window() {
 			}
 
 			// Dessiner le bouton "À Propos"
-			rl.DrawRectangleRec(params.àProposBtn, rl.DarkGray)
-			rl.DrawText("À Propos", int32(params.àProposBtn.X+params.àProposBtn.Width/2-30), int32(params.àProposBtn.Y+params.àProposBtn.Height/2-10), 20, rl.RayWhite)
+			rl.DrawRectangleRec(MenuBtn.àProposBtn, rl.DarkGray)
+			rl.DrawText("À Propos", int32(MenuBtn.àProposBtn.X+MenuBtn.àProposBtn.Width/2-30), int32(MenuBtn.àProposBtn.Y+MenuBtn.àProposBtn.Height/2-10), 20, rl.RayWhite)
 
 			rl.EndDrawing()
 		}
