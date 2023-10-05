@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"time"
-	"os"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -14,14 +13,14 @@ var (
 		positionBarreVol int32
 		volumeHaut       rl.Texture2D
 		volumeMuet       rl.Texture2D
-		afficherÀPropos bool
-		texteÀPropos    string
-		policeÀPropos   rl.Font
-		largeurÉcran    int32
-		hauteurÉcran    int32
-		son             rl.Sound
-		CLargeurEcran   int32
-		CHauteurEcran   int32
+		afficherÀPropos  bool
+		texteÀPropos     string
+		policeÀPropos    rl.Font
+		largeurÉcran     int32
+		hauteurÉcran     int32
+		son              rl.Sound
+		CLarEcran    int32
+		CHauEcran    int32
 	}
 
 	MenuBtn struct {
@@ -60,27 +59,31 @@ var time_boost2 int32 = int32(time_boost1)
 
 
 
-
-
 func main() {
 	if Debug {
 		fmt.Print("Starting...")
 	}
 
-	params.largeurÉcran = 1200
+	params.largeurÉcran = 800
 	params.hauteurÉcran = 600
 
+	params.CLarEcran = params.largeurÉcran/2
+	params.CHauEcran = params.hauteurÉcran/2
+
+	var x int32 = 0
+	var y int32 = 0
 
 
 
-	rl.InitWindow(params.largeurÉcran, params.hauteurÉcran, "raylib [core] example - basic window")
+	rl.InitWindow(params.largeurÉcran, params.hauteurÉcran, "raylib [core]  - Sudoku window")
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(144)
 	initBtn()
 
-	displayTextAnim()
+	
+	x, y = TitreDec()
 	time.Sleep(300 * time.Millisecond)
-	DrawTittle()
+	x, y = TritreMont(x,y)
 	time.Sleep(300 * time.Millisecond)
 	DrawMenu()
 
@@ -88,15 +91,21 @@ func main() {
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
-		rl.DrawFPS(10, 10)
+		rl.DrawFPS(10, 10)	
+
 
 		// Affichez le titre "SUDOKU"
-		rl.DrawText("SUDOKU", 300, 100, 60, rl.Black)
+		rl.DrawText("SUDOKU", x + (params.largeurÉcran*1/20) , y - (params.hauteurÉcran*5/10), 60, rl.Black)
+
+		if Debug {
+			fmt.Println(x," ",y)
+		}
+
 
 		drawButton(MenuBtn.playButton, MenuBtn.playButtonColor, "PLAY", 60)
 		drawButton(MenuBtn.settingsButton, MenuBtn.settingsButtonColor, "SETTINGS", 60)
-		drawButton(MenuBtn.quitButton, MenuBtn.quitButtonColor, "QUIT", 60)
-
+		drawButton(MenuBtn.quitButton, MenuBtn.quitButtonColor, "QUIT", 60) 
+		
 		VerifBTCol()
 
 		if Debug {
@@ -113,15 +122,20 @@ func main() {
 
 
 
+
+
+
 func loadImages() {
 	params.volumeHaut = rl.LoadTexture("volumeup.png") // Remplacez par le chemin de votre image pour le volume haut
 	params.volumeMuet = rl.LoadTexture("mute.png")     // Remplacez par le chemin de votre image pour le volume muet
 }
 
-func displayTextAnim() {
 
-	var x int32 = 300
-	var y int32 = 0
+
+func TitreDec() (int32,int32) {
+
+	var x int32 = params.CLarEcran - (12*params.largeurÉcran/100)
+	var y int32 = params.CHauEcran - (2*params.hauteurÉcran/10)
 
 	var r uint8 = 0
 	var g uint8 = 0
@@ -153,25 +167,32 @@ func displayTextAnim() {
 		rl.BeginDrawing()
 		rl.DrawText("SUDOKU", x, y, 40, rl.Black)
 		rl.ClearBackground(bcolor)
-		y += (time_boost2*7)/int32(i)
+		y += (time_boost2) / int32(i)
 		rl.EndDrawing()
 	}
-
 	if Debug {
-		fmt.Println("Fin le l'animation")
+		fmt.Println("Fin le l'animation",x," ",y)
 	}
+	return x, y
 
 }
 
-func DrawTittle() {
 
-	var x int32 = 300
-	var y int32 = 200
+
+
+
+
+func TritreMont(x int32, y int32) (int32 , int32){
+
 
 	var r uint8 = 255
 	var g uint8 = 255
 	var b uint8 = 255
 	var a uint8 = 255
+
+	var Fx int32 = 0
+	var Fy int32 = 0
+
 
 	if Debug {
 		fmt.Println("creation couleur Font")
@@ -195,33 +216,45 @@ func DrawTittle() {
 	rl.DrawText("SUDOKU", x, y, 60, rl.Black)
 	rl.EndDrawing()
 	time.Sleep(1 * time.Second)
+	
 
-	for i := 1; i < 500/time_boost1; i++ {
+	for i := 1; i < 300/time_boost1; i++ {
 		rl.BeginDrawing()
 		rl.ClearBackground(fcolor)
 		rl.DrawText("SUDOKU", x, y, 60, rl.Black)
 		rl.DrawFPS(0, 0)
 		rl.ClearBackground(fcolor)
-		y -= time_boost2 * 4 /int32(i)
+		y -= time_boost2 * 2 / int32(i)
 		rl.EndDrawing()
 	}
+	
 
 	if Debug {
 		fmt.Println("titre sudoku en place")
 	}
 
-	x = 0
-	y = 0
+	x  = params.CLarEcran - params.largeurÉcran/10
+	y  = params.CHauEcran + (2*params.hauteurÉcran/10)
 
 	for i := 1; i < 10/time_boost1; i++ {
-		rl.DrawFPS(x, y)
-		rl.DrawText("SUDOKU", 300, 100, 60, rl.Black)
+		rl.DrawFPS(Fx, Fy)
+		rl.DrawText("SUDOKU", x, y, 60, rl.Black)
 		rl.ClearBackground(fcolor)
-		x+=time_boost2/(int32(i)*2)
-		y+=time_boost2/(int32(i)*2)
+		Fx += time_boost2 / (int32(i) * 2)
+		Fy += time_boost2 / (int32(i) * 2)
 	}
-
+	
+	if Debug {
+		fmt.Println("Fin le l'animation",x," ",y)
+	}
+	return x, y
 }
+
+
+
+
+
+
 
 func loadSound() {
 	// Initialisation du périphérique audio
@@ -240,23 +273,22 @@ func DrawMenu() {
 	var bcolor = rl.NewColor(r, g, b, a)
 
 	a = 255
-
 	for i := 1; i < 254/time_boost1; i++ {
 		rl.BeginDrawing()
 		bcolor = rl.NewColor(r, g, b, a)
 		drawButton(MenuBtn.playButton, MenuBtn.playButtonColor, "PLAY", 60) // Augmentez la taille du texte
 		rl.DrawRectangle(300, 200, 250, 60, bcolor)
-		a -= time_boost*time_boost/(uint8(i))
+		a -= time_boost * time_boost / (uint8(i))
 		rl.EndDrawing()
 	}
 
 	a = 255
 
-	for i := 1; i < 254/time_boost1; i++ {
+	for i := 1; i < 100/time_boost1; i++ {
 		bcolor = rl.NewColor(r, g, b, a)
 		drawButton(MenuBtn.settingsButton, MenuBtn.settingsButtonColor, "SETTINGS", 60)
-		rl.DrawRectangle(300, 270, 250, 60, bcolor)
-		a -= time_boost*time_boost/(uint8(i))
+		rl.DrawRectangle(300, 270, 350, 60, bcolor)
+		a -= time_boost * time_boost / (uint8(i))
 		rl.EndDrawing()
 	}
 
@@ -267,10 +299,9 @@ func DrawMenu() {
 		bcolor = rl.NewColor(r, g, b, a)
 		drawButton(MenuBtn.quitButton, MenuBtn.quitButtonColor, "QUIT", 60)
 		rl.DrawRectangle(300, 340, 250, 60, bcolor)
-		a -= time_boost*time_boost/(uint8(i))
+		a -= time_boost * time_boost / (uint8(i))
 		rl.EndDrawing()
 	}
-
 
 }
 
@@ -286,6 +317,9 @@ func initBtn() {
 	MenuBtn.quitButtonColor = rl.RayWhite
 
 }
+
+
+
 
 func VerifBTCol() {
 
@@ -328,6 +362,8 @@ func VerifBTCol() {
 		MenuBtn.quitButtonColor = rl.RayWhite
 	}
 }
+
+
 
 func drawButton(rect rl.Rectangle, color rl.Color, text string, fontSize int32) {
 	textWidth := rl.MeasureText(text, fontSize) + 20 // Ajoutez un espace pour le texte
