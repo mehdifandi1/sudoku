@@ -336,6 +336,7 @@ func initBtn()(int32,int32,int32,int32,int32,int32,) {
 	 xsi := int32(xs)
 	 ysi := int32(ys)
 
+	 
 	 xqi := int32(xq)
 	 yqi := int32(yq)
 
