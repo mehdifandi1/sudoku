@@ -64,8 +64,8 @@ func main() {
 		fmt.Print("Starting...")
 	}
 
-	params.largeurÉcran = 800
-	params.hauteurÉcran = 600
+	params.largeurÉcran = 1920
+	params.hauteurÉcran = 1080
 
 	params.CLarEcran = params.largeurÉcran/2
 	params.CHauEcran = params.hauteurÉcran/2
@@ -78,14 +78,16 @@ func main() {
 	rl.InitWindow(params.largeurÉcran, params.hauteurÉcran, "raylib [core]  - Sudoku window")
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(144)
-	initBtn()
+	xpi,ypi,xsi,ysi,xqi,yqi := initBtn()
 
 	
 	x, y = TitreDec()
 	time.Sleep(300 * time.Millisecond)
 	x, y = TritreMont(x,y)
 	time.Sleep(300 * time.Millisecond)
-	DrawMenu()
+	DrawMenu(xpi,ypi,xsi,ysi,xqi,yqi)
+
+
 
 	for !rl.WindowShouldClose() {
 
@@ -95,7 +97,7 @@ func main() {
 
 
 		// Affichez le titre "SUDOKU"
-		rl.DrawText("SUDOKU", x + (params.largeurÉcran*1/20) , y - (params.hauteurÉcran*5/10), 60, rl.Black)
+		rl.DrawText("SUDOKU", x  , y, 60, rl.Black)
 
 		if Debug {
 			fmt.Println(x," ",y)
@@ -167,7 +169,7 @@ func TitreDec() (int32,int32) {
 		rl.BeginDrawing()
 		rl.DrawText("SUDOKU", x, y, 40, rl.Black)
 		rl.ClearBackground(bcolor)
-		y += (time_boost2) / int32(i)
+		y += (time_boost2*2) / int32(i)
 		rl.EndDrawing()
 	}
 	if Debug {
@@ -204,8 +206,8 @@ func TritreMont(x int32, y int32) (int32 , int32){
 	}
 
 	//Initialisation des fichier a chargés
-	//loadImages()
-	//loadSound()
+	loadImages()
+	loadSound()
 
 	rl.BeginDrawing()
 	rl.ClearBackground(fcolor)
@@ -215,7 +217,7 @@ func TritreMont(x int32, y int32) (int32 , int32){
 	rl.BeginDrawing()
 	rl.DrawText("SUDOKU", x, y, 60, rl.Black)
 	rl.EndDrawing()
-	time.Sleep(1 * time.Second)
+	time.Sleep(300 * time.Millisecond)
 	
 
 	for i := 1; i < 300/time_boost1; i++ {
@@ -233,8 +235,7 @@ func TritreMont(x int32, y int32) (int32 , int32){
 		fmt.Println("titre sudoku en place")
 	}
 
-	x  = params.CLarEcran - params.largeurÉcran/10
-	y  = params.CHauEcran + (2*params.hauteurÉcran/10)
+
 
 	for i := 1; i < 10/time_boost1; i++ {
 		rl.DrawFPS(Fx, Fy)
@@ -265,7 +266,7 @@ func loadSound() {
 	params.son = rl.LoadSound("Exyl - MOAI MONEY.mp3")
 }
 
-func DrawMenu() {
+func DrawMenu(xpi int32,ypi int32,xsi int32,ysi int32,xqi int32,yqi int32) {
 	var r uint8 = 255
 	var g uint8 = 255
 	var b uint8 = 255
@@ -277,7 +278,7 @@ func DrawMenu() {
 		rl.BeginDrawing()
 		bcolor = rl.NewColor(r, g, b, a)
 		drawButton(MenuBtn.playButton, MenuBtn.playButtonColor, "PLAY", 60) // Augmentez la taille du texte
-		rl.DrawRectangle(300, 200, 250, 60, bcolor)
+		rl.DrawRectangle(xpi, ypi, 250, 60, bcolor)
 		a -= time_boost * time_boost / (uint8(i))
 		rl.EndDrawing()
 	}
@@ -287,7 +288,7 @@ func DrawMenu() {
 	for i := 1; i < 100/time_boost1; i++ {
 		bcolor = rl.NewColor(r, g, b, a)
 		drawButton(MenuBtn.settingsButton, MenuBtn.settingsButtonColor, "SETTINGS", 60)
-		rl.DrawRectangle(300, 270, 350, 60, bcolor)
+		rl.DrawRectangle(xsi, ysi, 350, 60, bcolor)
 		a -= time_boost * time_boost / (uint8(i))
 		rl.EndDrawing()
 	}
@@ -298,23 +299,48 @@ func DrawMenu() {
 		rl.BeginDrawing()
 		bcolor = rl.NewColor(r, g, b, a)
 		drawButton(MenuBtn.quitButton, MenuBtn.quitButtonColor, "QUIT", 60)
-		rl.DrawRectangle(300, 340, 250, 60, bcolor)
+		rl.DrawRectangle(xqi, yqi, 250, 60, bcolor)
 		a -= time_boost * time_boost / (uint8(i))
 		rl.EndDrawing()
 	}
 
 }
 
-func initBtn() {
+func initBtn()(int32,int32,int32,int32,int32,int32,) {
+	
+	var xp float32 = float32(params.CLarEcran - params.largeurÉcran/10)
+	var yp float32 = float32(params.CHauEcran - (5*params.hauteurÉcran/100))
+
+	var xs float32 = float32(params.CLarEcran - params.largeurÉcran/10)
+	var ys float32 = float32(params.CHauEcran + (5*params.hauteurÉcran/100))
+
+	var xq float32 = float32(params.CLarEcran - params.largeurÉcran/10)
+	var yq float32 = float32(params.CHauEcran + (15*params.hauteurÉcran/100))
+	
+	
+
+	
 	// Initialisation des Rectangles
-	MenuBtn.playButton = rl.NewRectangle(300, 200, 250, 60)     // Augmentez la largeur et la hauteur des boutons
-	MenuBtn.settingsButton = rl.NewRectangle(300, 270, 250, 60) // Augmentez la position Y et la taille des boutons
-	MenuBtn.quitButton = rl.NewRectangle(300, 340, 250, 60)     // Augmentez la position Y et la taille des boutons
+	MenuBtn.playButton = rl.NewRectangle(xp, yp, 250, 60)     // Augmentez la largeur et la hauteur des boutons
+	MenuBtn.settingsButton = rl.NewRectangle(xs, ys, 250, 60) // Augmentez la position Y et la taille des boutons
+	MenuBtn.quitButton = rl.NewRectangle(xq, yq, 250, 60)     // Augmentez la position Y et la taille des boutons
 
 	// Initialisation de la couleurs des boutton
 	MenuBtn.playButtonColor = rl.RayWhite
 	MenuBtn.settingsButtonColor = rl.RayWhite
 	MenuBtn.quitButtonColor = rl.RayWhite
+
+	 xpi := int32(xp)
+	 ypi := int32(yp)
+
+	 xsi := int32(xs)
+	 ysi := int32(ys)
+
+	 xqi := int32(xq)
+	 yqi := int32(yq)
+
+	
+	return xpi,ypi,xsi,ysi,xqi,yqi
 
 }
 
@@ -327,7 +353,7 @@ func VerifBTCol() {
 
 	//Vérifier les collisions de boutons
 	if rl.CheckCollisionPointRec(mousePos, MenuBtn.playButton) {
-		MenuBtn.playButtonColor = rl.Red
+		MenuBtn.playButtonColor = rl.Gray
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			if Debug {
 				fmt.Println("Boutton Play cliqué")
@@ -339,7 +365,7 @@ func VerifBTCol() {
 	}
 
 	if rl.CheckCollisionPointRec(mousePos, MenuBtn.settingsButton) {
-		MenuBtn.settingsButtonColor = rl.Red
+		MenuBtn.settingsButtonColor = rl.Gray
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			if Debug {
 				fmt.Println("Boutton Setting cliqué")
@@ -351,7 +377,7 @@ func VerifBTCol() {
 	}
 
 	if rl.CheckCollisionPointRec(mousePos, MenuBtn.quitButton) {
-		MenuBtn.quitButtonColor = rl.Red
+		MenuBtn.quitButtonColor = rl.Gray
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			if Debug {
 				fmt.Println("Boutton Quit cliqué")
