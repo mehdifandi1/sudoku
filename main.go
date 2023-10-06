@@ -312,7 +312,7 @@ func loadSound() {
 	
 
 	// Charger le son MP3 comme un son normal (pas un flux musical)
-	params.son = rl.LoadSound("Exyl - MOAI MONEY.mp3")
+	params.son = rl.LoadSound("music.mp3")
 	rl.PlaySound(params.son)
 }
 

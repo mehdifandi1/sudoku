@@ -15,7 +15,7 @@ func parseResolution(resolution string) (int, int) {
 
 func setting_window() {
 
-	rl.PlaySound(params.son)
+	
 
 	// Save button on the bottom right
 	saveBtn = rl.NewRectangle(float32(params.largeurÉcran-largeurBtnSave-marginRight), float32(params.hauteurÉcran-hauteurBtnSave-marginBottom), float32(largeurBtnSave), float32(hauteurBtnSave))
@@ -51,7 +51,6 @@ func setting_window() {
 		//rl.DrawText("À Propos", int32(MenuBtn.aboutbutton.X+MenuBtn.aboutbutton.Width/2-30), int32(MenuBtn.aboutbutton.Y+MenuBtn.aboutbutton.Height/2-10), 20, rl.RayWhite)
 		//rl.DrawRectangleRec(fpsBtn, rl.DarkGray)
 		rl.DrawText(fpsBtnText[fpsBtnState], int32(fpsBtn.X+fpsBtn.Width/2)-30, int32(fpsBtn.Y+fpsBtn.Height/2)-10, 20, rl.Black)
-
 		rl.EndDrawing()
 
 	}
