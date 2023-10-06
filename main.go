@@ -19,19 +19,48 @@ var (
 		largeurÉcran     int32
 		hauteurÉcran     int32
 		son              rl.Sound
-		CLarEcran    int32
-		CHauEcran    int32
+		CLarEcran    	 int32
+		CHauEcran    	 int32
+		Fps              int32
 	}
 
 	MenuBtn struct {
-		àProposBtn          rl.Rectangle
+		aboutbutton    	    rl.Rectangle
 		playButton          rl.Rectangle
 		settingsButton      rl.Rectangle
 		quitButton          rl.Rectangle
+
+		aboutbuttonColor	rl.Color
 		playButtonColor     rl.Color
 		settingsButtonColor rl.Color
 		quitButtonColor     rl.Color
+
+
+		volume              int32
+		positionBarreVol    int32
+		volumeHaut          rl.Texture2D
+		volumeMuet          rl.Texture2D
+		afficherÀPropos     bool
+		texteÀPropos        string
+		policeÀPropos       rl.Font
+
 	}
+
+	resolutionBtn 		rl.Rectangle
+	numr         		int
+	resolutions   =	  []string{"800x600", "1024x768", "1280x720"}
+	numf      			int
+	currentFPS  		int32
+	fpsOptions  =     []int32{30, 60, 120, 240}
+	fpsBtnState         int // 0: 30 FPS, 1: 60 FPS, 2: 120 FPS, 3: 240 FPS
+	fpsBtnText  =     []string{"30 FPS", "60 FPS", "120 FPS", "240 FPS"}
+	fpsBtn     		    rl.Rectangle
+	saveBtn             rl.Rectangle
+	width 				int
+	height				int
+	BackToMenu 			bool=false
+	
+		
 )
 
 const (
@@ -42,10 +71,20 @@ const (
 	tailleIcône       = 32  // Taille des icônes de volume
 	largeurBtnÀPropos = 150 // Largeur du bouton "À Propos"
 	hauteurBtnÀPropos = 40  // Hauteur du bouton "À Propos"
+	largeurBtnResolution = 200 // Increased width for the resolution button
+	hauteurBtnResolution = 40
+	largeurBtnSave       = 100
+	hauteurBtnSave       = 40
+	largeurBtnFPS        = 100 // Width of the FPS button
+	hauteurBtnFPS        = 40  // Height of the FPS button
+	marginTop            = 20
+	marginLeft           = 20
+	marginRight          = 20
+	marginBottom         = 20
 
 )
 
-const Debug = true
+const Debug = false
 
 var time_boost uint8 = 8
 var time_boost1 int = int(time_boost)
@@ -60,34 +99,39 @@ var time_boost2 int32 = int32(time_boost1)
 
 
 func main() {
-	if Debug {
-		fmt.Print("Starting...")
-	}
 
-	params.largeurÉcran = 1920
-	params.hauteurÉcran = 1080
 
-	params.CLarEcran = params.largeurÉcran/2
-	params.CHauEcran = params.hauteurÉcran/2
 
 	var x int32 = 0
 	var y int32 = 0
 
 
+	if(BackToMenu == false){
 
-	rl.InitWindow(params.largeurÉcran, params.hauteurÉcran, "raylib [core]  - Sudoku window")
-	defer rl.CloseWindow()
-	rl.SetTargetFPS(144)
-	xpi,ypi,xsi,ysi,xqi,yqi := initBtn()
+		if Debug {
+			fmt.Print("Starting...")
+		}
 
-	
-	x, y = TitreDec()
-	time.Sleep(300 * time.Millisecond)
-	x, y = TritreMont(x,y)
-	time.Sleep(300 * time.Millisecond)
-	DrawMenu(xpi,ypi,xsi,ysi,xqi,yqi)
+		params.largeurÉcran = 960
+		params.hauteurÉcran = 540
+
+		params.CLarEcran = params.largeurÉcran/2
+		params.CHauEcran = params.hauteurÉcran/2
 
 
+
+		rl.InitWindow(params.largeurÉcran, params.hauteurÉcran, "raylib [core]  - Sudoku window")
+		defer rl.CloseWindow()
+		rl.SetTargetFPS(144)
+		xpi,ypi,xsi,ysi,xqi,yqi := initBtn()
+
+		
+		x, y = TitreDec()
+		time.Sleep(300 * time.Millisecond)
+		x, y = TritreMont(x,y)
+		time.Sleep(300 * time.Millisecond)
+		DrawMenu(xpi,ypi,xsi,ysi,xqi,yqi)
+	}
 
 	for !rl.WindowShouldClose() {
 
@@ -97,7 +141,7 @@ func main() {
 
 
 		// Affichez le titre "SUDOKU"
-		rl.DrawText("SUDOKU", x  , y, 60, rl.Black)
+		rl.DrawText("SUDOKU", x , y, 60, rl.Black)
 
 		if Debug {
 			fmt.Println(x," ",y)
@@ -115,7 +159,12 @@ func main() {
 		}
 		rl.EndDrawing()
 	}
+
+
+
 }
+
+
 
 
 
@@ -260,10 +309,11 @@ func TritreMont(x int32, y int32) (int32 , int32){
 func loadSound() {
 	// Initialisation du périphérique audio
 	rl.InitAudioDevice()
-	defer rl.CloseAudioDevice()
+	
 
 	// Charger le son MP3 comme un son normal (pas un flux musical)
 	params.son = rl.LoadSound("Exyl - MOAI MONEY.mp3")
+	rl.PlaySound(params.son)
 }
 
 func DrawMenu(xpi int32,ypi int32,xsi int32,ysi int32,xqi int32,yqi int32) {
@@ -309,21 +359,21 @@ func DrawMenu(xpi int32,ypi int32,xsi int32,ysi int32,xqi int32,yqi int32) {
 func initBtn()(int32,int32,int32,int32,int32,int32,) {
 	
 	var xp float32 = float32(params.CLarEcran - params.largeurÉcran/10)
-	var yp float32 = float32(params.CHauEcran - (5*params.hauteurÉcran/100))
+	var yp float32 = float32(params.CHauEcran - (8*params.hauteurÉcran/100))
 
 	var xs float32 = float32(params.CLarEcran - params.largeurÉcran/10)
 	var ys float32 = float32(params.CHauEcran + (5*params.hauteurÉcran/100))
 
 	var xq float32 = float32(params.CLarEcran - params.largeurÉcran/10)
-	var yq float32 = float32(params.CHauEcran + (15*params.hauteurÉcran/100))
+	var yq float32 = float32(params.CHauEcran + (18*params.hauteurÉcran/100))
 	
 	
 
 	
 	// Initialisation des Rectangles
-	MenuBtn.playButton = rl.NewRectangle(xp, yp, 250, 60)     // Augmentez la largeur et la hauteur des boutons
-	MenuBtn.settingsButton = rl.NewRectangle(xs, ys, 250, 60) // Augmentez la position Y et la taille des boutons
-	MenuBtn.quitButton = rl.NewRectangle(xq, yq, 250, 60)     // Augmentez la position Y et la taille des boutons
+	MenuBtn.playButton = rl.NewRectangle(xp, yp, 250, 50)     // Augmentez la largeur et la hauteur des boutons
+	MenuBtn.settingsButton = rl.NewRectangle(xs, ys, 250,50) // Augmentez la position Y et la taille des boutons
+	MenuBtn.quitButton = rl.NewRectangle(xq, yq, 250, 50)     // Augmentez la position Y et la taille des boutons
 
 	// Initialisation de la couleurs des boutton
 	MenuBtn.playButtonColor = rl.RayWhite
