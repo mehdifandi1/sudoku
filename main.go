@@ -44,11 +44,12 @@ var (
 		afficherÀPropos  bool
 		texteÀPropos     string
 		policeÀPropos    rl.Font
+	
 	}
 
 	resolutionBtn rl.Rectangle
 	numr          int
-	resolutions   = []string{"800x600", "1024x768", "1280x720"}
+	resolutions   = []string{"800x600", "1024x768", "1280x720" ,"1400x1050", "1600x900" ,"1600x1200","1920x1080","2048x1536","2560x1440","2560x1600"}
 	numf          int
 	currentFPS    int32
 	fpsOptions    = []int32{30, 60, 120, 240}
@@ -83,7 +84,7 @@ const (
 
 const Debug = false
 
-var time_boost uint8 = 8
+var time_boost uint8 = 10 //10,8
 var time_boost1 int = int(time_boost)
 var time_boost2 int32 = int32(time_boost1)
 
@@ -93,20 +94,27 @@ func main() {
 	var y int32 = 0
 
 	if BackToMenu == false {
+		
+
+		params.largeurÉcran = 1024
+		params.hauteurÉcran = 768
+	}
+
+	rl.InitWindow(params.largeurÉcran, params.hauteurÉcran, "raylib [core]  - Sudoku window")
+	defer rl.CloseWindow()
+	rl.SetTargetFPS(params.Fps)
+
+
+	if BackToMenu == false {
 
 		if Debug {
 			fmt.Print("Starting...")
 		}
 
-		params.largeurÉcran = 960
-		params.hauteurÉcran = 540
-
 		params.CLarEcran = params.largeurÉcran / 2
 		params.CHauEcran = params.hauteurÉcran / 2
 
-		rl.InitWindow(params.largeurÉcran, params.hauteurÉcran, "raylib [core]  - Sudoku window")
-		defer rl.CloseWindow()
-		rl.SetTargetFPS(144)
+
 		xpi, ypi, xsi, ysi, xqi, yqi := initBtn()
 
 		x, y = TitreDec()
@@ -114,7 +122,9 @@ func main() {
 		x, y = TritreMont(x, y)
 		time.Sleep(300 * time.Millisecond)
 		DrawMenu(xpi, ypi, xsi, ysi, xqi, yqi)
+
 	}
+	
 
 	for !rl.WindowShouldClose() {
 
@@ -138,6 +148,7 @@ func main() {
 		if Debug {
 			fmt.Println("Running smoothly ...")
 		}
+		time.Sleep(17 * time.Millisecond)
 		rl.EndDrawing()
 	}
 
@@ -172,6 +183,7 @@ func TitreDec() (int32, int32) {
 		g += time_boost
 		b += time_boost
 		rl.EndDrawing()
+		time.Sleep(7 * time.Millisecond)
 	}
 	time.Sleep(2 * time.Second)
 
@@ -185,6 +197,7 @@ func TitreDec() (int32, int32) {
 		rl.ClearBackground(bcolor)
 		y += (time_boost2 * 2) / int32(i)
 		rl.EndDrawing()
+		time.Sleep(7 * time.Millisecond)
 	}
 	if Debug {
 		fmt.Println("Fin le l'animation", x, " ", y)
@@ -234,6 +247,8 @@ func TritreMont(x int32, y int32) (int32, int32) {
 		rl.ClearBackground(fcolor)
 		y -= time_boost2 * 2 / int32(i)
 		rl.EndDrawing()
+		time.Sleep(7 * time.Millisecond)
+
 	}
 
 	if Debug {
@@ -246,6 +261,7 @@ func TritreMont(x int32, y int32) (int32, int32) {
 		rl.ClearBackground(fcolor)
 		Fx += time_boost2 / (int32(i) * 2)
 		Fy += time_boost2 / (int32(i) * 2)
+		time.Sleep(7 * time.Millisecond)
 	}
 
 	if Debug {
@@ -396,3 +412,4 @@ func drawButton(rect rl.Rectangle, color rl.Color, text string, fontSize int32) 
 	rl.DrawRectangleLinesEx(rect, 2, color)
 	rl.DrawText(text, int32(rect.X+10), int32(rect.Y+10), fontSize, rl.Black)
 }
+

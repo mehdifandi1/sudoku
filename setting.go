@@ -64,6 +64,8 @@ func setting_window() {
 
 func collBtsSetting() {
 	mousePos := rl.GetMousePosition()
+	width = int(params.largeurÉcran)
+	height =int(params.largeurÉcran)
 
 	//bouton à Propos
 	if rl.CheckCollisionPointRec(mousePos, MenuBtn.aboutbutton) && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
@@ -78,6 +80,7 @@ func collBtsSetting() {
 			numr = 0
 		}
 		width, height = parseResolution(resolutions[numr])
+		
 
 	}
 
@@ -97,6 +100,7 @@ func collBtsSetting() {
 			fmt.Println("Saving ...")
 		}
 		BackToMenu = true
+		rl.CloseWindow()
 		main()
 
 	}

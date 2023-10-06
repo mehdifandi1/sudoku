@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/gen2brain/raylib-go/raylib"
 	"math/rand"
 	"time"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
@@ -22,15 +23,13 @@ const (
 )
 
 var (
-	board               [BoardSize][BoardSize]int
-	selectedRow         = -1
-	selectedCol         = -1
+	board                 [BoardSize][BoardSize]int
+	selectedRow           = -1
+	selectedCol           = -1
 	verificationInProgess = false
 )
 
 func Starting_game() {
-	
-	
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -262,7 +261,7 @@ func drawNumbers() {
 				// Draw the number in the center of the cell
 				x := int32(float32(col)*CellSize + CellSize/2 - 10)
 				y := int32(float32(row)*CellSize + CellSize/2 - 10)
-				rl.DrawText(fmt.Sprintf("%d", num), x, y, 20, rl.Black)
+				rl.DrawText(fmt.Sprintf("%d", num),x, y, 20, rl.Black)
 			}
 
 			// Highlight the selected cell
