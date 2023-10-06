@@ -20,17 +20,15 @@ func setting_window() {
 	// Save button on the bottom right
 	//saveBtn = rl.NewRectangle(float32(params.largeurÉcran-largeurBtnSave-marginRight), float32(params.hauteurÉcran-hauteurBtnSave-marginBottom), float32(largeurBtnSave), float32(hauteurBtnSave))
 	// About button to the left of the Save button
-	
+
 	//fpsBtn := rl.NewRectangle(float32(marginLeft), resolutionBtn.Y+resolutionBtn.Height+marginBottom, float32(largeurBtnFPS), float32(hauteurBtnFPS))
 	// Initialize current FPS to the default value
 	fpsBtn = rl.NewRectangle(float32(marginLeft), resolutionBtn.Y+resolutionBtn.Height+marginBottom, float32(largeurBtnFPS), float32(hauteurBtnFPS))
 
 	MenuBtn.aboutbuttonColor = rl.Black
-	MenuBtn.aboutbutton = rl.NewRectangle(float32((params.largeurÉcran/2) + (params.largeurÉcran*2/10)), float32(params.hauteurÉcran/2 + (params.hauteurÉcran*25/100) ),250,50)
+	MenuBtn.aboutbutton = rl.NewRectangle(float32((params.largeurÉcran/2)+(params.largeurÉcran*2/10)), float32(params.hauteurÉcran/2+(params.hauteurÉcran*25/100)), 250, 50)
 	MenuBtn.savebuttoncolor = rl.Black
-	MenuBtn.savebutton = rl.NewRectangle(float32((params.largeurÉcran/2) + (params.largeurÉcran*1/100)), float32(params.hauteurÉcran/2 + (params.hauteurÉcran*25/100) ),250,50)
-
-
+	MenuBtn.savebutton = rl.NewRectangle(float32((params.largeurÉcran/2)+(params.largeurÉcran*1/100)), float32(params.hauteurÉcran/2+(params.hauteurÉcran*25/100)), 250, 50)
 
 	for !rl.WindowShouldClose() {
 
@@ -41,7 +39,6 @@ func setting_window() {
 		collBtsSetting()
 		soundfunc(params.son)
 
-		
 		drawButton(MenuBtn.aboutbutton, MenuBtn.aboutbuttonColor, "About", 60)
 
 		drawButton(MenuBtn.savebutton, MenuBtn.savebuttoncolor, "save", 60)
@@ -52,7 +49,6 @@ func setting_window() {
 		//rl.DrawText("À Propos", int32(MenuBtn.aboutbutton.X+MenuBtn.aboutbutton.Width/2-30), int32(MenuBtn.aboutbutton.Y+MenuBtn.aboutbutton.Height/2-10), 20, rl.RayWhite)
 		//rl.DrawRectangleRec(fpsBtn, rl.DarkGray)
 		rl.DrawText(fpsBtnText[fpsBtnState], int32(fpsBtn.X+fpsBtn.Width/2)-30, int32(fpsBtn.Y+fpsBtn.Height/2)+15, 20, rl.Black)
-
 
 		rl.EndDrawing()
 
@@ -69,7 +65,7 @@ func setting_window() {
 func collBtsSetting() {
 	mousePos := rl.GetMousePosition()
 
-	//bouton à Propos 
+	//bouton à Propos
 	if rl.CheckCollisionPointRec(mousePos, MenuBtn.aboutbutton) && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 		params.afficherÀPropos = true
 	}
@@ -92,7 +88,7 @@ func collBtsSetting() {
 
 	}
 
-	if rl.CheckCollisionPointRec(rl.GetMousePosition(), saveBtn) && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+	if rl.CheckCollisionPointRec(rl.GetMousePosition(), MenuBtn.savebutton) && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 		//save on le regle apres!!!!!!!!!!!!
 		params.Fps = currentFPS
 		params.hauteurÉcran = int32(height)
