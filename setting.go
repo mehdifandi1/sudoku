@@ -15,21 +15,20 @@ func parseResolution(resolution string) (int, int) {
 
 func setting_window() {
 
-	
+	rl.PlaySound(params.son)
 
 	// Save button on the bottom right
-	saveBtn = rl.NewRectangle(float32(params.largeurÉcran-largeurBtnSave-marginRight), float32(params.hauteurÉcran-hauteurBtnSave-marginBottom), float32(largeurBtnSave), float32(hauteurBtnSave))
+	//saveBtn = rl.NewRectangle(float32(params.largeurÉcran-largeurBtnSave-marginRight), float32(params.hauteurÉcran-hauteurBtnSave-marginBottom), float32(largeurBtnSave), float32(hauteurBtnSave))
 	// About button to the left of the Save button
 	
-
-	// FPS button under the Resolution button
 	//fpsBtn := rl.NewRectangle(float32(marginLeft), resolutionBtn.Y+resolutionBtn.Height+marginBottom, float32(largeurBtnFPS), float32(hauteurBtnFPS))
 	// Initialize current FPS to the default value
 	fpsBtn = rl.NewRectangle(float32(marginLeft), resolutionBtn.Y+resolutionBtn.Height+marginBottom, float32(largeurBtnFPS), float32(hauteurBtnFPS))
 
 	MenuBtn.aboutbuttonColor = rl.Black
 	MenuBtn.aboutbutton = rl.NewRectangle(float32((params.largeurÉcran/2) + (params.largeurÉcran*2/10)), float32(params.hauteurÉcran/2 + (params.hauteurÉcran*25/100) ),250,50)
-	
+	MenuBtn.savebuttoncolor = rl.Black
+	MenuBtn.savebutton = rl.NewRectangle(float32((params.largeurÉcran/2) + (params.largeurÉcran*1/100)), float32(params.hauteurÉcran/2 + (params.hauteurÉcran*25/100) ),250,50)
 
 
 
@@ -45,12 +44,16 @@ func setting_window() {
 		
 		drawButton(MenuBtn.aboutbutton, MenuBtn.aboutbuttonColor, "About", 60)
 
+		drawButton(MenuBtn.savebutton, MenuBtn.savebuttoncolor, "save", 60)
+
 		resolutionText := fmt.Sprintf("Resolution : %s", resolutions[numr])
 		rl.DrawText(resolutionText, int32(resolutionBtn.X+10), int32(resolutionBtn.Y+resolutionBtn.Height/2-10), 20, rl.Black)
 		//rl.DrawRectangleRec(MenuBtn.aboutbutton, rl.DarkGray)
 		//rl.DrawText("À Propos", int32(MenuBtn.aboutbutton.X+MenuBtn.aboutbutton.Width/2-30), int32(MenuBtn.aboutbutton.Y+MenuBtn.aboutbutton.Height/2-10), 20, rl.RayWhite)
 		//rl.DrawRectangleRec(fpsBtn, rl.DarkGray)
-		rl.DrawText(fpsBtnText[fpsBtnState], int32(fpsBtn.X+fpsBtn.Width/2)-30, int32(fpsBtn.Y+fpsBtn.Height/2)-10, 20, rl.Black)
+		rl.DrawText(fpsBtnText[fpsBtnState], int32(fpsBtn.X+fpsBtn.Width/2)-30, int32(fpsBtn.Y+fpsBtn.Height/2)+15, 20, rl.Black)
+
+
 		rl.EndDrawing()
 
 	}
@@ -66,7 +69,7 @@ func setting_window() {
 func collBtsSetting() {
 	mousePos := rl.GetMousePosition()
 
-	//bouton à Propos
+	//bouton à Propos 
 	if rl.CheckCollisionPointRec(mousePos, MenuBtn.aboutbutton) && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 		params.afficherÀPropos = true
 	}
@@ -110,7 +113,7 @@ func soundfunc(son rl.Sound) {
 	params.positionBarreVol = int32(float32(params.volume) * (float32(largeurBarreVol) / 5))
 	// Draw Volume Text
 	texteVolume := fmt.Sprintf("Volume : %d", params.volume)
-	rl.DrawText(texteVolume, int32(volumeTextPos.X), int32(volumeTextPos.Y), 20, rl.DarkGray)
+	rl.DrawText(texteVolume, int32(volumeTextPos.X), int32(volumeTextPos.Y), 19, rl.DarkGray)
 	// Volume bar in front of the text with a small space
 	volumeBarPos := rl.NewVector2(float32(marginLeft)+float32(largeurBtnSave)+0.5, float32(marginTop))
 	// Volume images in front of the volume bar with a small space
