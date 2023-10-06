@@ -45,7 +45,7 @@ const (
 
 )
 
-const Debug = true
+const Debug = false
 
 var time_boost uint8 = 8
 var time_boost1 int = int(time_boost)
